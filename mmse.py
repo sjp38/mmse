@@ -130,6 +130,10 @@ if __name__ == "__main__":
             metavar='page_alloc_latency',
             help='latency of single page allocation (nsecs)')
 
+    parser.add_argument('--alg', type=str, default='lru',
+            metavar='memory_management_algorithm',
+            help='name of the target memory management algorithm')
+
     args = parser.parse_args()
 
     mem_size = args.msz
@@ -138,11 +142,13 @@ if __name__ == "__main__":
     mem_major_page_fault_latency = args.mmajorf
     mem_page_alloc_latency = args.mpgalloc
 
+    algorithm = args.alg
+
     lru.mem_size = mem_size
     available_mem = mem_size
 
-    reclaim = algorithms["lru"][0]
-    reclaim_hook = algorithms["lru"][1]
+    reclaim = algorithms[algorithm][0]
+    reclaim_hook = algorithms[algorithm][1]
     random.seed(42)
     print "runtime: ", mmse_runtime(daps), "nsecs"
     print "\n"
