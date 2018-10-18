@@ -10,14 +10,6 @@ stat_nr_hits = 0
 
 from dap import *
 
-daps =  [
-            [
-                Dape(0, SZ_PAGE * 4 - 1, "sequential", 1, 1000000),
-                Dape(SZ_PAGE * 4, SZ_PAGE * 8 - 1, "random", 10, 100000),
-                Dape(SZ_PAGE * 8, SZ_PAGE * 10 - 1, "sequential", 20, 50000)
-            ]
-        ]
-
 import lru
 
 algorithms = {

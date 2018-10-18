@@ -1,3 +1,5 @@
+from comm import *
+
 # Data Access Pattern
 """
 daps is a list of access patterns.
@@ -51,3 +53,10 @@ def dape_calc_probs(dapes):
         dape.prob = total_prob
     return total_nr_accs
 
+daps =  [
+            [
+                Dape(0, SZ_PAGE * 4 - 1, "sequential", 1, 1000000),
+                Dape(SZ_PAGE * 4, SZ_PAGE * 8 - 1, "random", 10, 100000),
+                Dape(SZ_PAGE * 8, SZ_PAGE * 10 - 1, "sequential", 20, 50000)
+            ]
+        ]
