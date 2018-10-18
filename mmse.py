@@ -19,34 +19,11 @@ daps =  [
             ]
         ]
 
+import lru
 
-
-# LRU Reclamation Algorithm.
-lru_list = []
-LRU_MEM_PORTION_TO_EVICT = 0.2
-LRU_RECLAIM_RUNTIME = 60
-
-def lru_reclaim():
-    global stat_nr_reclaims
-    global lru_list
-
-    stat_nr_reclaims += 1
-
-    nr_pages_to_evict = int(mem_size * LRU_MEM_PORTION_TO_EVICT / SZ_PAGE)
-    to_evict = lru_list[-1 * nr_pages_to_evict:]
-    lru_list = lru_list[:-1 * nr_pages_to_evict]
-
-    return to_evict, LRU_RECLAIM_RUNTIME
-
-# Hook for page access
-def lru_accessed(pfn):
-    global lru_list
-
-    if pfn in lru_list:
-        lru_list.remove(pfn)
-    lru_list = [pfn] + lru_list
-
-
+algorithms = {
+        "lru": [lru.lru_reclaim, lru.lru_accessed]
+        }
 
 import argparse
 import random
@@ -67,11 +44,13 @@ ptes = {}
 
 def mmse_alloc_page():
     global available_mem
+    global stat_nr_reclaims
 
     runtime = 0
     if available_mem <= 0:
         # memory pressure!
         evicted, runtime = reclaim()
+        stat_nr_reclaims += 1
         for pfn in evicted:
             ptes[pfn].evicted = True
         available_mem += SZ_PAGE * len(evicted)
@@ -160,10 +139,11 @@ if __name__ == "__main__":
     mem_major_page_fault_latency = args.mmajorf
     mem_page_alloc_latency = args.mpgalloc
 
+    lru.mem_size = mem_size
     available_mem = mem_size
 
-    reclaim = lru_reclaim
-    reclaim_hook = lru_accessed
+    reclaim = algorithms["lru"][0]
+    reclaim_hook = algorithms["lru"][1]
     random.seed(42)
     print "runtime: ", mmse_runtime(daps), "nsecs"
     print "\n"
