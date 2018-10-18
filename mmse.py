@@ -10,13 +10,6 @@ stat_nr_minor_faults = 0
 stat_nr_hits = 0
 
 
-# Memory characteristics
-mem_size = SZ_PAGE * 4
-mem_access_latency = 10    # nano second
-mem_minor_page_fault_latency = 2000
-mem_major_page_fault_latency = 20000
-mem_page_alloc_latency = 200
-
 # Data Access Pattern
 """
 daps is a list of access patterns.
@@ -107,6 +100,7 @@ def lru_accessed(pfn):
 
 
 
+import argparse
 import random
 
 def next_entry(dap):
@@ -122,8 +116,6 @@ class PTE:
         self.evicted = evicted
 
 ptes = {}
-
-available_mem = mem_size
 
 def mmse_alloc_page():
     global available_mem
@@ -194,6 +186,34 @@ def mmse_runtime(daps):
     return runtime
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    # memory characteristics of the target system
+    parser.add_argument('--msz', type=int, default=SZ_PAGE * 4,
+            metavar='memory_size', help='target system memory size')
+    parser.add_argument('--maccess', type=int, default=10,
+            metavar='memory_access_latency',
+            help='latency of memory access (nsecs)')
+    parser.add_argument('--mminorf', type=int, default=2000,
+            metavar='minor_fault_latency',
+            help='latency of minor fault handling (nsecs)')
+    parser.add_argument('--mmajorf', type=int, default=20000,
+            metavar='major_fault_latency',
+            help='latency of major fault handling (nsecs)')
+    parser.add_argument('--mpgalloc', type=int, default=200,
+            metavar='page_alloc_latency',
+            help='latency of single page allocation (nsecs)')
+
+    args = parser.parse_args()
+
+    mem_size = args.msz
+    mem_access_latency = args.maccess
+    mem_minor_page_fault_latency = args.mminorf
+    mem_major_page_fault_latency = args.mmajorf
+    mem_page_alloc_latency = args.mpgalloc
+
+    available_mem = mem_size
+
     reclaim = lru_reclaim
     reclaim_hook = lru_accessed
     random.seed(42)
