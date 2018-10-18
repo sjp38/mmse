@@ -15,6 +15,7 @@ mem_size = SZ_PAGE * 4
 mem_access_latency = 10    # nano second
 mem_minor_page_fault_latency = 2000
 mem_major_page_fault_latency = 20000
+mem_page_alloc_latency = 200
 
 # Data Access Pattern
 """
@@ -82,6 +83,7 @@ daps =  [
 # LRU Reclamation Algorithm.
 lru_list = []
 LRU_MEM_PORTION_TO_EVICT = 0.2
+LRU_RECLAIM_RUNTIME = 60
 
 def lru_reclaim():
     global stat_nr_reclaims
@@ -93,7 +95,7 @@ def lru_reclaim():
     to_evict = lru_list[-1 * nr_pages_to_evict:]
     lru_list = lru_list[:-1 * nr_pages_to_evict]
 
-    return to_evict
+    return to_evict, LRU_RECLAIM_RUNTIME
 
 # Hook for page access
 def lru_accessed(pfn):
@@ -126,13 +128,17 @@ available_mem = mem_size
 def demu_alloc_page():
     global available_mem
 
+    runtime = 0
     if available_mem <= 0:
         # memory pressure!
-        evicted = reclaim()
+        evicted, runtime = reclaim()
         for pfn in evicted:
             ptes[pfn].evicted = True
         available_mem += SZ_PAGE * len(evicted)
+    runtime += mem_page_alloc_latency
     available_mem -= SZ_PAGE
+
+    return runtime
 
 def demu_access(dape):
     global stat_nr_major_faults
@@ -152,14 +158,14 @@ def demu_access(dape):
     if not pfn in ptes:
         # minor page fault
         stat_nr_minor_faults += 1
-        demu_alloc_page()
+        runtime += demu_alloc_page()
         available_mem -= SZ_PAGE
         ptes[pfn] = PTE(False)
         runtime += mem_minor_page_fault_latency
     elif ptes[pfn].evicted:
         # major page fault (evicted)
         stat_nr_major_faults += 1
-        demu_alloc_page()
+        runtime += demu_alloc_page()
         available_mem -= SZ_PAGE
         ptes[pfn].evicted = False
         runtime += mem_major_page_fault_latency
