@@ -1,23 +1,21 @@
 #!/usr/bin/env python
 
+import argparse
+import random
+
 from comm import *
-
-# stat
-stat_nr_reclaims = 0
-stat_nr_major_faults = 0
-stat_nr_minor_faults = 0
-stat_nr_hits = 0
-
 from dap import *
-
 import lru
 
 algorithms = {
         "lru": [lru.lru_reclaim, lru.lru_accessed]
         }
 
-import argparse
-import random
+# stat
+stat_nr_reclaims = 0
+stat_nr_major_faults = 0
+stat_nr_minor_faults = 0
+stat_nr_hits = 0
 
 def next_entry(dap):
     luck = random.uniform(0, 1)
