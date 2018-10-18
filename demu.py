@@ -71,9 +71,9 @@ def dape_calc_probs(dapes):
 
 daps =  [
             [
-                Dape(0, SZ_PAGE * 4 - 1, "sequential", 1, 10000),
-                Dape(SZ_PAGE * 4, SZ_PAGE * 8 - 1, "random", 10, 1000),
-                Dape(SZ_PAGE * 8, SZ_PAGE * 10 - 1, "sequential", 20, 500)
+                Dape(0, SZ_PAGE * 4 - 1, "sequential", 1, 1000000),
+                Dape(SZ_PAGE * 4, SZ_PAGE * 8 - 1, "random", 10, 100000),
+                Dape(SZ_PAGE * 8, SZ_PAGE * 10 - 1, "sequential", 20, 50000)
             ]
         ]
 
@@ -123,6 +123,17 @@ ptes = {}
 
 available_mem = mem_size
 
+def demu_alloc_page():
+    global available_mem
+
+    if available_mem <= 0:
+        # memory pressure!
+        evicted = reclaim()
+        for pfn in evicted:
+            ptes[pfn].evicted = True
+        available_mem += SZ_PAGE * len(evicted)
+    available_mem -= SZ_PAGE
+
 def demu_access(dape):
     global stat_nr_major_faults
     global stat_nr_minor_faults
@@ -138,25 +149,20 @@ def demu_access(dape):
 
     pfn = target_addr / 4096
 
-    # memory pressure!
-    if available_mem <= 0:
-        evicted = reclaim()
-        for pfn in evicted:
-            ptes[pfn].evicted = True
-        available_mem += SZ_PAGE * len(evicted)
-
     if not pfn in ptes:
         # minor page fault
         stat_nr_minor_faults += 1
+        demu_alloc_page()
+        available_mem -= SZ_PAGE
         ptes[pfn] = PTE(False)
         runtime += mem_minor_page_fault_latency
-        available_mem -= SZ_PAGE
     elif ptes[pfn].evicted:
         # major page fault (evicted)
         stat_nr_major_faults += 1
+        demu_alloc_page()
+        available_mem -= SZ_PAGE
         ptes[pfn].evicted = False
         runtime += mem_major_page_fault_latency
-        available_mem -= SZ_PAGE
     else:
         stat_nr_hits += 1
         # hit!
