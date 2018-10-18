@@ -125,7 +125,7 @@ ptes = {}
 
 available_mem = mem_size
 
-def demu_alloc_page():
+def mmse_alloc_page():
     global available_mem
 
     runtime = 0
@@ -140,7 +140,7 @@ def demu_alloc_page():
 
     return runtime
 
-def demu_access(dape):
+def mmse_access(dape):
     global stat_nr_major_faults
     global stat_nr_minor_faults
     global stat_nr_hits
@@ -161,14 +161,14 @@ def demu_access(dape):
     if not pfn in ptes:
         # minor page fault
         stat_nr_minor_faults += 1
-        runtime += demu_alloc_page()
+        runtime += mmse_alloc_page()
         available_mem -= SZ_PAGE
         ptes[pfn] = PTE(False)
         runtime += mem_minor_page_fault_latency
     elif ptes[pfn].evicted:
         # major page fault (evicted)
         stat_nr_major_faults += 1
-        runtime += demu_alloc_page()
+        runtime += mmse_alloc_page()
         available_mem -= SZ_PAGE
         ptes[pfn].evicted = False
         runtime += mem_major_page_fault_latency
@@ -183,13 +183,13 @@ def demu_access(dape):
 
     return runtime
 
-def demu_runtime(daps):
+def mmse_runtime(daps):
     runtime = 0
     for dap in daps:
         total_nr_accs = dape_calc_probs(dap)
         nr_accs = 0
         while nr_accs < total_nr_accs:
-            runtime += demu_access(next_entry(dap))
+            runtime += mmse_access(next_entry(dap))
             nr_accs += 1
     return runtime
 
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     reclaim = lru_reclaim
     reclaim_hook = lru_accessed
     random.seed(42)
-    print "runtime: ", demu_runtime(daps), "nsecs"
+    print "runtime: ", mmse_runtime(daps), "nsecs"
     print "\n"
 
     print "statistics"
