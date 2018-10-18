@@ -1,0 +1,20 @@
+MMSE: Memory Management System Evaluator
+========================================
+
+MMSE is a tool for memory management system evaluation.  It receives physical /
+logical characteristic of target system, memory management algorithms for
+operating systems, and a data access pattern of a workload as inputs, simulates
+the memory management system behavior for the workload, and provide an
+estimated runtime for the workload.
+
+
+License
+=======
+
+GPL v3
+
+
+Author
+======
+
+SeongJae Park <sj38.park@gmail.com>
