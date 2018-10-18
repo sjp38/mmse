@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-# Common
-SZ_PAGE = 4096
+from comm import *
 
 # stat
 stat_nr_reclaims = 0

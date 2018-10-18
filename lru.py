@@ -1,4 +1,4 @@
-SZ_PAGE = 4096
+from comm import *
 
 # LRU Reclamation Algorithm.
 lru_list = []
