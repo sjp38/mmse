@@ -182,8 +182,12 @@ if __name__ == "__main__":
     reclaim_hook = lru_accessed
     random.seed(42)
     print "runtime: ", demu_runtime(daps), "nsecs"
+    print "\n"
 
+    print "statistics"
+    print "=========="
+    print ""
     print "reclaims: ", stat_nr_reclaims
-    print "minor faults: ", stat_nr_minor_faults
-    print "major faults: ", stat_nr_major_faults
+    print "minor_faults: ", stat_nr_minor_faults
+    print "major_faults: ", stat_nr_major_faults
     print "hits: ", stat_nr_hits
