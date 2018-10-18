@@ -124,6 +124,9 @@ if __name__ == "__main__":
             metavar='memory_management_algorithm',
             help='name of the target memory management algorithm')
 
+    parser.add_argument('--stat', action='store_true',
+            help='Calculate and print simple stat')
+
     args = parser.parse_args()
 
     mem_size = args.msz
@@ -134,6 +137,8 @@ if __name__ == "__main__":
 
     algorithm = args.alg
 
+    do_stat = args.stat
+
     lru.mem_size = mem_size
     available_mem = mem_size
 
@@ -141,6 +146,10 @@ if __name__ == "__main__":
     reclaim_hook = algorithms[algorithm][1]
     random.seed(42)
     print "runtime: ", mmse_runtime(daps), "nsecs"
+
+    if not do_stat:
+        exit(0)
+
     print "\n"
 
     print "statistics"
