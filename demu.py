@@ -57,7 +57,7 @@ class Dape:
         self.stride = stride
         self.nr_accs = nr_accesses
         self.prob = prob
-        self.last_access_addr = -1
+        self.last_access_addr = saddr
 
 def dape_calc_probs(dapes):
     total_nr_accs = 0
@@ -150,6 +150,9 @@ def demu_access(dape):
     target_addr = 0
     if dape.pattern == "sequential":
         target_addr = dape.last_access_addr + dape.stride
+        if target_addr >= dape.eaddr:
+            target_addr = dape.saddr
+            dape.last_access_addr = dape.saddr
     if dape.pattern == "random":
         target_addr = random.randrange(dape.saddr, dape.eaddr)
 
@@ -176,6 +179,7 @@ def demu_access(dape):
 
     reclaim_hook(pfn)
     runtime += mem_access_latency
+    dape.last_access_addr = target_addr
 
     return runtime
 
