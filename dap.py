@@ -42,6 +42,13 @@ class Dape:
         self.prob = prob
         self.last_access_addr = saddr
 
+    def __str__(self):
+        return "[%d-%d, %s, %d, %d]" % (self.saddr, self.eaddr, self.pattern,
+                self.stride, self.nr_accs)
+
+    def __repr__(self):
+        return self.__str__()
+
 def dape_calc_probs(dapes):
     total_nr_accs = 0
     for dape in dapes:
@@ -85,4 +92,4 @@ def file_to_daps(fpath):
 
 import sys
 if __name__ == "__main__":
-    print file_to_daps(sys.argv[1])
+    print "%s" % file_to_daps(sys.argv[1])
