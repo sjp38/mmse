@@ -92,4 +92,8 @@ def file_to_daps(fpath):
 
 import sys
 if __name__ == "__main__":
-    print "%s" % file_to_daps(sys.argv[1])
+    daps = file_to_daps(sys.argv[1])
+    for dap in daps:
+        for dape in dap:
+            print dape
+        print ""
