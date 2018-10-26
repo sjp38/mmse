@@ -1,7 +1,27 @@
+# This file is a sample data access patterns file.  A program is constructed
+# with multiple phases and each phase has unique data access pattern.  Thus, a
+# data access pattern of a program can be defined as a list of data access
+# patterns for its phases.
+#
+# Further, we define the data access pattern for each program phase as a list
+# of data access pattern entries.  Each data access pattern entry is defined as
+# a memory address range, access type (sequential or random; skewered will be
+# supported in future), access stride, and number of accesses to the memory
+# address range.
+#
+# This file uses a format for the data access patterns.  Lines starting with
+# '#' is comments.  The comment lines are ignored while parsing.  Each line
+# presents the data access pattern entry.  Consecutive data access pattern
+# entry lines constitutes a data access pattern.  Data access patterns are
+# sperated by one or more blank lines.
+#
+# For more detail, refer to 'dap.py'.
 # range, seq|rnd, stride, number of accesses
+
 0-16383, sequential, 1, 1000000
 16384-32767, random, 10, 100000
 32768-40959, sequential, 20, 50000
+
 
 # multiple daps seperated by blank line
 0-16383, random, 10, 100000
