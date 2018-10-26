@@ -66,7 +66,6 @@ def file_to_daps(fpath):
     dap = None
     with open(fpath, 'r') as f:
         for l in f:
-            print "line: ", l
             if l.startswith('#'):
                 continue
             if l == '\n':
