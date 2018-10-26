@@ -2,3 +2,8 @@
 0-16383, sequential, 1, 1000000
 16384-32767, random, 10, 100000
 32768-40959, sequential, 20, 50000
+
+# multiple daps seperated by blank line
+0-16383, random, 10, 100000
+16384-32767, random, 10, 100000
+32768-40959, sequential, 20, 50000
