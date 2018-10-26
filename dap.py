@@ -60,3 +60,30 @@ daps =  [
                 Dape(SZ_PAGE * 8, SZ_PAGE * 10 - 1, "sequential", 20, 50000)
             ]
         ]
+
+def file_to_daps(fpath):
+    daps = []
+    dap = None
+    with open(fpath, 'r') as f:
+        for l in f:
+            print "line: ", l
+            if l.startswith('#'):
+                continue
+            if l == '\n':
+                if dap:
+                    daps.append(dap)
+                dap = None
+                continue
+            if not dap:
+                dap = []
+            fields = l.split(',')
+            region = fields[0].split('-')
+            dap.append(Dape(int(region[0]), int(region[1]), fields[1].strip(),
+                int(fields[2]), int(fields[3])))
+    if dap:
+        daps.append(dap)
+    return daps
+
+import sys
+if __name__ == "__main__":
+    print file_to_daps(sys.argv[1])

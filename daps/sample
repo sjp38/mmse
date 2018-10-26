@@ -1,0 +1,4 @@
+# range, seq|rnd, stride, number of accesses
+0-16383, sequential, 1, 1000000
+16384-32767, random, 10, 100000
+32768-40959, sequential, 20, 50000
