@@ -127,6 +127,10 @@ if __name__ == "__main__":
             metavar='memory_management_algorithm',
             help='name of the target memory management algorithm')
 
+    parser.add_argument('--daps', type=str, default='',
+            metavar='data_access_patterns_file',
+            help='path to the file containing the target data access patterns')
+
     parser.add_argument('--stat', action='store_true',
             help='Calculate and print simple stat')
 
@@ -139,6 +143,13 @@ if __name__ == "__main__":
     mem_page_alloc_latency = args.mpgalloc
 
     algorithm = args.alg
+
+    daps_file = args.daps
+    if daps_file == '':
+        daps = default_daps
+    else:
+        daps = file_to_daps(daps_file)
+
 
     do_stat = args.stat
 
