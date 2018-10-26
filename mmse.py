@@ -5,10 +5,13 @@ import random
 
 from comm import *
 from dap import *
+
+import fifo
 import lru
 
 algorithms = {
-        "lru": [lru.lru_reclaim, lru.lru_accessed]
+        "lru": [lru.lru_reclaim, lru.lru_accessed],
+        "fifo": [fifo.reclaim, fifo.accessed]
         }
 
 # stat
@@ -140,6 +143,7 @@ if __name__ == "__main__":
     do_stat = args.stat
 
     lru.mem_size = mem_size
+    fifo.mem_size = mem_size
     available_mem = mem_size
 
     reclaim = algorithms[algorithm][0]
