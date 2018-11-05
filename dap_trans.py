@@ -30,11 +30,10 @@ def dap_trans_daphic(obj_path, dap_path):
 			if line.startswith('#'):
 				continue
 			fields = re.split('_| |\n', line)
-			if ctx != fields[0]:
+			if ctx != int(fields[0]):
 				if ctx:
-					daps.append('# ctx %d' % ctx)
+					daps.append('# ctx %d\n' % ctx)
 					daps.append(dap)
-					daps.append('\n')
 				dap = []
 			ctx = int(fields[0])
 			obj = int(fields[1])
@@ -44,8 +43,9 @@ def dap_trans_daphic(obj_path, dap_path):
 			dap.append("sequential")
 			dap.append("4")
 			dap.append(str(nr_accs))
+			dap.append('\n')
 	if dap:
-		daps.append('# ctx %d' % ctx)
+		daps.append('# ctx %d\n' % ctx)
 		daps.append(dap)
 	return daps
 
@@ -54,13 +54,14 @@ def write_out_daps(output_path, daps):
 		for dap in daps:
 			dap_string = ""
 			if dap[0] == '#':
-				dap_string = dap + '\n'
-			elif dap == '\n':
-				dap_string = '\n'
+				dap_string = dap
 			else:
 				for entity in dap:
+					if entity == '\n':
+						dap_string = dap_string[0:-2] + '\n'
+						continue
 					dap_string += entity + ', '
-				dap_string = dap_string[0:-2] + '\n'
+				dap_string += '\n'
 			mmse_dap.write(dap_string)
 
 if __name__ == "__main__":
