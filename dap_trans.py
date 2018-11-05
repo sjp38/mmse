@@ -3,9 +3,20 @@
 import re
 
 def get_obj_info_daphic(obj_path):
-	size = {12884967425:214400000, 17179934721:214400000} 
-	addr = {12884967425:0x7f7c2d483010, 17179934721:0x7f7c2080b010}
-	return [size, addr]
+	obj_size = {}
+	obj_addr = {}
+	with open(obj_path, 'r') as objs:
+		for line in objs:
+			if line.startswith('#'):
+				continue
+			fields = re.split(' *\t*\n*', line)
+			print(fields)
+			obj = int(fields[0])
+			size = int(fields[2])
+			addr = int(fields[3], 0)
+			obj_size[obj] = size
+			obj_addr[obj] = addr
+	return [obj_size, obj_addr]
 
 def dap_trans_daphic(obj_path, dap_path):
 	daps = []
@@ -53,11 +64,9 @@ def write_out_daps(output_path, daps):
 			mmse_dap.write(dap_string)
 
 if __name__ == "__main__":
-	print("Hello, I'm a dap generator!")
 	daphic_dap = "/home/yjlee/470.lbm.dap.dat"
 	daphic_obj = "/home/yjlee/470.lbm.alloctrace"
 	mmse_dap = "daps/daphic/470.lbm"
 
 	daps = dap_trans_daphic(daphic_obj, daphic_dap)
-	print(daps)
 	write_out_daps(mmse_dap, daps)
