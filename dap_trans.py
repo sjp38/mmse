@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import re
 
 def get_obj_info_daphic(obj_path):
@@ -10,7 +11,6 @@ def get_obj_info_daphic(obj_path):
 			if line.startswith('#'):
 				continue
 			fields = re.split(' *\t*\n*', line)
-			print(fields)
 			obj = int(fields[0])
 			size = int(fields[2])
 			addr = int(fields[3], 0)
@@ -64,9 +64,19 @@ def write_out_daps(output_path, daps):
 			mmse_dap.write(dap_string)
 
 if __name__ == "__main__":
-	daphic_dap = "/home/yjlee/470.lbm.dap.dat"
-	daphic_obj = "/home/yjlee/470.lbm.alloctrace"
-	mmse_dap = "daps/daphic/470.lbm"
+	parser = argparse.ArgumentParser()
 
-	daps = dap_trans_daphic(daphic_obj, daphic_dap)
-	write_out_daps(mmse_dap, daps)
+	parser.add_argument('--style', choices=['daphic'], default='daphic', metavar='dap_style', help='in which style is this dap written?')
+	parser.add_argument('--indap', type=str, default='daps/others/daphic/470.lbm.dap.dat', metavar='input_dap', help='path for input dap')
+	parser.add_argument('--inobj', type=str, default='daps/others/daphic/470.lbm.alloctrace', metavar='input_obj', help='path for object info')
+	parser.add_argument('--outdap', type=str, default='daps/daphic/470.lbm', metavar='output_dap', help='path to write out translated dap')
+
+	args = parser.parse_args()
+
+	dap_path = args.indap
+	obj_path = args.inobj
+	output_path = args.outdap
+	dap_style = args.style
+	
+	daps = dap_trans_daphic(obj_path, dap_path)
+	write_out_daps(output_path, daps)
