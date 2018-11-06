@@ -160,7 +160,7 @@ if __name__ == "__main__":
     reclaim = algorithms[algorithm][0]
     reclaim_hook = algorithms[algorithm][1]
     random.seed(42)
-    print "runtime: ", mmse_runtime(daps), "nsecs"
+    print "runtime: ", "{:,}".format(mmse_runtime(daps)), "nsecs"
 
     if not do_stat:
         exit(0)
