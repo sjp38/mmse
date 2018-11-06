@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import re
 
 def get_obj_info_daphic(obj_path):
@@ -54,9 +55,21 @@ def write_out_daps(output_path, daps):
 
 if __name__ == "__main__":
 	print("Hello, I'm a dap generator!")
-	daphic_dap = "/home/yjlee/470.lbm.dap.dat"
-	daphic_obj = "/home/yjlee/470.lbm.alloctrace"
+	parser = argparse.ArgumentParser()
+
+	parser.add_argument('--dap', type=str, metavar='data_access_pattern',
+		help='path to the data access pattern file of ctxobjtracer')
+	parser.add_argument('--atrace', type=str, metavar='alloc_trace',
+		help='path to the allocation trace file')
+
+	args = parser.parse_args()
+	daphic_dap = args.dap
+	daphic_obj = args.atrace
 	mmse_dap = "daps/daphic/470.lbm"
+
+	if not daphic_dap or not daphic_obj:
+		parser.print_help()
+		exit(1)
 
 	daps = dap_trans_daphic(daphic_obj, daphic_dap)
 	print(daps)
