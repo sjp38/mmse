@@ -96,7 +96,12 @@ def mmse_access(dape):
 
 def mmse_runtime(daps):
     runtime = 0
-    for dap in daps:
+    for idx, dap in enumerate(daps):
+        if verbose:
+            print "Process dap %d/%d" % (idx, len(daps))
+            for dape in dap:
+                print dape
+            print ""
         total_nr_accs = dape_calc_probs(dap)
         nr_accs = 0
         while nr_accs < total_nr_accs:
@@ -133,6 +138,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--stat', action='store_true',
             help='Calculate and print simple stat')
+    parser.add_argument('--verbose', action='store_true',
+            help='verbose output')
 
     args = parser.parse_args()
 
@@ -152,6 +159,7 @@ if __name__ == "__main__":
 
 
     do_stat = args.stat
+    verbose = args.verbose
 
     lru.mem_size = mem_size
     fifo.mem_size = mem_size
@@ -160,7 +168,18 @@ if __name__ == "__main__":
     reclaim = algorithms[algorithm][0]
     reclaim_hook = algorithms[algorithm][1]
     random.seed(42)
-    print "runtime: ", "{:,}".format(mmse_runtime(daps)), "nsecs"
+
+    if verbose:
+        print "mem size:", mem_size
+        print "mem latency:", mem_access_latency
+        print "mem minor pf latency:", mem_minor_page_fault_latency
+        print "mem major pf latency:", mem_major_page_fault_latency
+        print "mem alloc latency:", mem_page_alloc_latency
+        print "algorithm:", algorithm
+        print ""
+
+    runtime = mmse_runtime(daps)
+    print "runtime: ", "{:,}".format(runtime), "nsecs"
 
     if not do_stat:
         exit(0)
