@@ -54,7 +54,6 @@ def write_out_daps(output_path, daps):
 			mmse_dap.write(dap_string)
 
 if __name__ == "__main__":
-	print("Hello, I'm a dap generator!")
 	parser = argparse.ArgumentParser()
 
 	parser.add_argument('--dap', type=str, metavar='data_access_pattern',
