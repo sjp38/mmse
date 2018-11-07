@@ -67,10 +67,16 @@ def write_out_daps(output_path, daps):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--style', choices=['daphic'], default='daphic', metavar='dap_style', help='in which style is this dap written?')
-    parser.add_argument('--indap', type=str, default='daps/others/daphic/470.lbm.dap.dat', metavar='input_dap', help='path for input dap')
-    parser.add_argument('--inobj', type=str, default='daps/others/daphic/470.lbm.alloctrace', metavar='input_obj', help='path for object info')
-    parser.add_argument('--outdap', type=str, default='daps/daphic/470.lbm', metavar='output_dap', help='path to write out translated dap')
+    parser.add_argument('--style', choices=['daphic'], default='daphic',
+            metavar='dap_style', help='in which style is this dap written?')
+    parser.add_argument('--indap', type=str,
+            default='daps/others/daphic/470.lbm.dap.dat', metavar='input_dap',
+            help='path for input dap')
+    parser.add_argument('--inobj', type=str,
+            default='daps/others/daphic/470.lbm.alloctrace',
+            metavar='input_obj', help='path for object info')
+    parser.add_argument('--outdap', type=str, default='daps/daphic/470.lbm',
+            metavar='output_dap', help='path to write out translated dap')
 
     args = parser.parse_args()
 
