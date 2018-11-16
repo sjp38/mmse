@@ -81,6 +81,35 @@ def dap_trans_blktrace(dap_path):
             dap = []
     return daps
 
+def dap_trans_pinatrace(dap_path):
+    daps = []
+    dap = []
+    with open(dap_path, 'r') as org_dap:
+        for line in org_dap:
+            if line.startswith('#'):
+                continue
+            fields = re.split(': | +', line.lstrip().rstrip()) 
+            inst = int(fields[0], 16)
+            acc_type = fields[1]
+            acc_addr = int(fields[2], 16)
+            acc_size = int(fields[3])
+            data = int(fields[4], 16)
+            addr = [acc_addr, acc_addr + acc_size - 1]
+            dap.append(str(addr[0]) + '-' + str(addr[1]))
+            dap.append("sequential")
+            stride = acc_size
+            if acc_size > 4:
+                stride = 4
+            dap.append(str(stride))
+            dap.append(str(acc_size//stride))
+            dap.append('\n')
+
+            daps.append('# instruction %d,\t%c,\tdata %s\n' % (inst, acc_type,
+                data))
+            daps.append(dap)
+            dap = []
+    return daps
+
 def write_out_daps(output_path, daps):
     with open(output_path, 'w') as mmse_dap:
         for dap in daps:
@@ -98,10 +127,11 @@ def write_out_daps(output_path, daps):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    subparsers_style = parser.add_subparsers(help = 'choose source dap style')
-    subparser_daphic = subparsers_style.add_parser('daphic')
-    subparser_blktrace = subparsers_style.add_parser('blktrace')
-    
+    subparsers = parser.add_subparsers(help = 'choose source dap style')
+    subparser_daphic = subparsers.add_parser('daphic')
+    subparser_blktrace = subparsers.add_parser('blktrace')
+    subparser_pinatrace = subparsers.add_parser('pinatrace')
+
 #   daphic
     subparser_daphic.add_argument('src_dap', type = str, 
             help='path for source dap')
@@ -117,7 +147,14 @@ if __name__ == "__main__":
     subparser_blktrace.add_argument('dst_dap', type = str,
             help = 'path to write out translated dap')
     subparser_blktrace.set_defaults(src_style = 'blktrace')    
-    
+   
+#   pinatrace
+    subparser_pinatrace.add_argument('src_dap', type = str,
+            help = 'path for source dap')
+    subparser_pinatrace.add_argument('dst_dap', type = str,
+            help = 'path to write out translated dap')
+    subparser_pinatrace.set_defaults(src_style = 'pinatrace')
+
     args = parser.parse_args()
     src_path = args.src_dap
     dst_path = args.dst_dap
@@ -128,4 +165,7 @@ if __name__ == "__main__":
 	daps = dap_trans_daphic(obj_path, src_path)
     elif src_style == 'blktrace':
 	daps = dap_trans_blktrace(src_path)
+    elif src_style == 'pinatrace':
+        daps = dap_trans_pinatrace(src_path)
+
     write_out_daps(dst_path, daps)
